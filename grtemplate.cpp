@@ -5,7 +5,7 @@
 
 using namespace std;
 
-ifstream in("data.txt");
+ifstream in("data2.txt");
 
 map<int, list<int>> MakeGr(bool orient) { //создание списка смежности графа
     map<int, list<int>> l_Adj;
@@ -40,11 +40,29 @@ map<int, list<int>> MakeGr(bool orient) { //создание списка сме
     return l_Adj;
 }
 
-int main() {
-    map<int, list<int>> gr = MakeGr(0);
-    cout << "STEPEN:" << endl;
+void DFS(map<int, list<int>> gr, int v, bool*& visited) { //обход в глубину
+    visited[v] = true;
     for (auto it = gr.begin(); it != gr.end(); it++) {
-        cout << "point " << it->first << ": " << it->second.size() << endl;
+        if (it->first == v) {
+            list<int> a = it->second;
+            for (auto iter = a.begin(); iter != a.end(); iter++)
+                if (!visited[*iter]) DFS(gr, *iter, visited);
+            break;
+        }
     }
+}
+
+int main() {
+    map<int, list<int>> grr = MakeGr(1);
+    int p;
+    cout << "point: ";
+    cin >> p;
+    bool* visited = new bool[grr.size()];
+    for (int i = 0; i < grr.size(); i++)
+        visited[i] = false;
+    DFS(grr, p, visited);
+    for (int i = 0; i < grr.size(); i++)
+        if (visited[i] == false)
+            cout << i << " ";
     return 0;
 }
