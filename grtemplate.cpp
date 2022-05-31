@@ -39,24 +39,12 @@ map<int, list<int>> MakeGr(bool orient) { //создание списка сме
     }
     return l_Adj;
 }
-void output(map<int, list<int>> gr) { //функция вывода
-    for (auto it = gr.begin(); it != gr.end(); it++) {
-        cout << "point " << it->first << ": ";
-        list<int> a = it->second;
-        for (auto iter = a.begin(); iter != a.end(); iter++)
-            cout << *iter << " ";
-        cout << endl;
-    }
-}
 
 int main() {
-    cout << "A and B: ";
-    int a, b;
-    cin >> a >> b;
     map<int, list<int>> gr = MakeGr(0);
-    gr[a].remove(b); //просто удаляем путь из a в b 
-    gr[b].remove(a); //и путь из b в a 
-    cout << "Done: " << endl;
-    output(gr);
+    cout << "STEPEN:" << endl;
+    for (auto it = gr.begin(); it != gr.end(); it++) {
+        cout << "point " << it->first << ": " << it->second.size() << endl;
+    }
     return 0;
 }
