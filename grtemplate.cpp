@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <list>
+#include <queue>
 #include <fstream>
 
 using namespace std;
@@ -40,29 +41,52 @@ map<int, list<int>> MakeGr(bool orient) { //создание списка сме
     return l_Adj;
 }
 
-void DFS(map<int, list<int>> gr, int v, bool*& visited) { //обход в глубину
+vector<int> BFS(map<int, list<int>> gr, int v, bool*& visited) { //обход в глубину
     visited[v] = true;
-    for (auto it = gr.begin(); it != gr.end(); it++) {
-        if (it->first == v) {
-            list<int> a = it->second;
-            for (auto iter = a.begin(); iter != a.end(); iter++)
-                if (!visited[*iter]) DFS(gr, *iter, visited);
-            break;
+    queue<int> q;
+    q.push(v);
+    vector<int> path;
+    path.push_back(v);
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        for (auto it = gr.begin(); it != gr.end(); it++) {
+            if (it->first == u) {
+                list<int> a = it->second;
+                for (auto iter = a.begin(); iter != a.end(); iter++)
+                    if (!visited[*iter]) {
+                        visited[*iter] = true;
+                        path.push_back(*iter);
+                        q.push(*iter);
+                    }
+                break;
+            }
         }
     }
+    return path;
 }
 
 int main() {
     map<int, list<int>> grr = MakeGr(1);
-    int p;
-    cout << "point: ";
-    cin >> p;
-    bool* visited = new bool[grr.size()];
+    bool *visited = new bool[grr.size()];
     for (int i = 0; i < grr.size(); i++)
         visited[i] = false;
-    DFS(grr, p, visited);
-    for (int i = 0; i < grr.size(); i++)
-        if (visited[i] == false)
-            cout << i << " ";
+    for (auto it = grr.begin(); it != grr.end(); it++) {
+        vector<int> path = BFS(grr, it->first, visited);
+        bool f = true; //флаг истока
+        for (int i = 0; i < grr.size(); i++) {
+            if (visited[i] == false) {
+                f = false; //если хотя бы 1 точка осталась непосещенной после обхода в ширину, то основная точка - не исток
+                break; //ОпТиМИзаЦиЯ
+            }
+        }
+        if (f) { //если все посещены, то говорим, что точка - исток и выводим результат обхода
+            cout << "point " << it->first << " is source: ";
+            for (vector<int>::iterator it1 = path.begin(); it1 != path.end(); it1++)
+                cout << *it1 << " ";
+            cout << endl;
+        }
+        for (int i = 0; i < grr.size(); i++) visited[i] = false;//опускаем все флаги, для инициализации следующей вершины
+    }
     return 0;
 }
